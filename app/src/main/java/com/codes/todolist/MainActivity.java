@@ -17,7 +17,9 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.Map;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -125,11 +127,13 @@ public class MainActivity extends AppCompatActivity {
 //                                "내용 : " + recive_context, Toast.LENGTH_LONG).show();
 
                 //firebase에 Data 추가
-                Integer size = fbdata.data.size();
-                mDatabase = FirebaseDatabase.getInstance().getReference().child("data").child(size.toString());
-                mDatabase.child("title").setValue(recive_date);
-                mDatabase.child("context").setValue(recive_context);
-                mDatabase.child("name").setValue(recive_name);
+                mDatabase = FirebaseDatabase.getInstance().getReference().child("data");
+                Map<String, String> tmp = new HashMap<>();
+                tmp.put("title",recive_date);
+                tmp.put("context",recive_context);
+                tmp.put("name",recive_name);
+                fbdata.data.add(tmp);
+                mDatabase.setValue(fbdata.data);
                 mDatabase.push();
             }
         }
@@ -145,16 +149,26 @@ public class MainActivity extends AppCompatActivity {
                 String recive_context = data.getStringExtra("context");
                 String recive_name = data.getStringExtra("name");
                 //Toast.makeText(MainActivity.this, "" + recive_index, Toast.LENGTH_LONG).show();
-                mDatabase = FirebaseDatabase.getInstance().getReference().child("data").child(recive_index);
-                mDatabase.child("title").setValue(recive_date);
-                mDatabase.child("context").setValue(recive_context);
-                mDatabase.child("name").setValue(recive_name);
+                mDatabase = FirebaseDatabase.getInstance().getReference().child("data");
+                Map<String, String> tmp = new HashMap<>();
+                tmp.put("title",recive_date);
+                tmp.put("context",recive_context);
+                tmp.put("name",recive_name);
+                fbdata.data.set(Integer.parseInt(recive_index),tmp);
+                mDatabase.setValue(fbdata.data);
                 mDatabase.push();
             }
             else if (resultCode == RESULT_FIRST_USER){
                 String recive_index = data.getStringExtra("index");
-                mDatabase = FirebaseDatabase.getInstance().getReference().child("data").child(recive_index);
-                mDatabase.removeValue();
+                if(fbdata.data.size()-1 == Integer.parseInt(recive_index)){
+                    mDatabase = FirebaseDatabase.getInstance().getReference().child("data").child(recive_index);
+                    mDatabase.removeValue();
+                } else {
+                    fbdata.data.remove(Integer.parseInt(recive_index));
+                    mDatabase = FirebaseDatabase.getInstance().getReference().child("data");
+                    mDatabase.setValue(fbdata.data);
+                    mDatabase.push();
+                }
             }
         }
     }

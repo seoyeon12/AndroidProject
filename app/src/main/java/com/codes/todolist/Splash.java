@@ -40,7 +40,6 @@ public class Splash extends AppCompatActivity {
             mDatabase.addValueEventListener(new ValueEventListener() {
                 @Override
                 public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                    Log.e("essesseesse",  ""+ fbdata.data.size());
                     fbdata = dataSnapshot.getValue(fbData.class);
                     startActivity(new Intent(getApplication(), MainActivity.class));
                     Splash.this.finish();
