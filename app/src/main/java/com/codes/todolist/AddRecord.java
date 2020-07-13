@@ -20,7 +20,7 @@ import java.util.Date;
 public class AddRecord extends AppCompatActivity {
 
     final Context context = this;
-    String selectDate, selectcontext;
+    String selectDate, selectcontext, selectName;
     CalendarView calendarView;
 
     @Override
@@ -45,7 +45,9 @@ public class AddRecord extends AppCompatActivity {
             public void onClick(View v) {
                 //Context 데이터
                 EditText editText = (EditText)findViewById(R.id.editText);
+                EditText editText2 = (EditText)findViewById(R.id.editTextName);
                 selectcontext = editText.getText().toString();
+                selectName = editText2.getText().toString();
                 //날짜 데이터 체킹
                 checkingDate();
 
@@ -60,6 +62,7 @@ public class AddRecord extends AppCompatActivity {
                     Intent intent = new Intent();
                     intent.putExtra("date", selectDate);
                     intent.putExtra("context", selectcontext);
+                    intent.putExtra("name", selectName);
                     setResult(RESULT_OK, intent);
                     finish();
                 }

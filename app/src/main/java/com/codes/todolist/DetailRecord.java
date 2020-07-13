@@ -15,9 +15,8 @@ import android.widget.Toast;
 
 public class DetailRecord extends AppCompatActivity {
 
-    TextView textViewIndex;
-    EditText editTextContext, editTextDate;
-    String index,date,context;
+    EditText editTextContext, editTextDate, editTextIndex;
+    String index,date,context,name;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -26,19 +25,21 @@ public class DetailRecord extends AppCompatActivity {
 
         editTextDate = findViewById(R.id.TimeText);
         editTextContext = findViewById(R.id.editText);
-        textViewIndex = findViewById(R.id.textViewIndex);
+        editTextIndex = findViewById(R.id.textViewIndex);
+        ImageButton DeleteButton = findViewById(R.id.DeleteButton);
+        Button button = findViewById(R.id.backButton);
 
         Intent intent = getIntent();
         index = intent.getExtras().getString("index");
         date = intent.getExtras().getString("date");
         context = intent.getExtras().getString("context");
+        name = intent.getExtras().getString("name");
 
         editTextDate.setText(date);
         editTextContext.setText(context);
-        textViewIndex.setText(index);
+        editTextIndex.setText(name);
 
         // ADD 버튼
-        Button button = findViewById(R.id.backButton);
         button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -46,18 +47,19 @@ public class DetailRecord extends AppCompatActivity {
                 // 업데이트 => RESULT_OK
                 String updateContext = editTextContext.getText().toString();
                 String updateDate = editTextDate.getText().toString();
+                String updateName = editTextIndex.getText().toString();
 
                 Intent intent = new Intent();
                 intent.putExtra("index", index);
                 intent.putExtra("date", updateDate);
                 intent.putExtra("context", updateContext);
+                intent.putExtra("name", updateName);
                 setResult(RESULT_OK, intent);
                 finish();
             }
         });
 
         // DELET 버튼
-        ImageButton DeleteButton = findViewById(R.id.DeleteButton);
         DeleteButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
