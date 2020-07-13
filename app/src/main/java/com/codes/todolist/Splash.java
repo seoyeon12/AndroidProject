@@ -3,6 +3,7 @@ package com.codes.todolist;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
@@ -43,6 +44,8 @@ public class Splash extends AppCompatActivity {
                     fbdata = dataSnapshot.getValue(fbData.class);
                     startActivity(new Intent(getApplication(), MainActivity.class));
                     Splash.this.finish();
+                    if(MainActivity.activity != null)
+                        MainActivity.activity.finish();
                 }
 
                 @Override

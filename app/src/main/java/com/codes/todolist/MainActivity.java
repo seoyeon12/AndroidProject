@@ -3,6 +3,7 @@ package com.codes.todolist;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
@@ -29,11 +30,14 @@ public class MainActivity extends AppCompatActivity {
     ArrayList<HashMap<String, String>> list = new ArrayList<HashMap<String, String>>();
     Splash splash;
     fbData fbdata = splash.fbdata;
+    static Activity activity;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        activity = this;
 
         ListView listView = (ListView) findViewById(R.id.listview);
 
@@ -45,10 +49,11 @@ public class MainActivity extends AppCompatActivity {
 //        listView.setAdapter(simpleAdapter);
 
         // 파이어베이스에서 가져온 데이터를 listview에 넣기
-        for (int i = 1; i < fbdata.data.size(); i++) {
-            //item 마지막 요소는 index 요소 추가
-            if(fbdata.data.get(i) != null){
+        if(fbdata.data != null) {
+            for (int i = 1; i < fbdata.data.size(); i++) {
                 //item 마지막 요소는 index 요소 추가
+                if (fbdata.data.get(i) != null) {
+                    //item 마지막 요소는 index 요소 추가
                 /*
                     HashMap<String, String> item;
                     String title = fbdata.data.get(i).get("title");
@@ -61,12 +66,13 @@ public class MainActivity extends AppCompatActivity {
                     item.put("name", name);
                     list.add(item);
                 */
-                String title = fbdata.data.get(i).get("title");
-                String context = fbdata.data.get(i).get("context");
-                String name = fbdata.data.get(i).get("name");
-                adapter.addItem(i,name,title,context);
-            }else{
-                System.out.println("Eles NULL!!!!");
+                    String title = fbdata.data.get(i).get("title");
+                    String context = fbdata.data.get(i).get("context");
+                    String name = fbdata.data.get(i).get("name");
+                    adapter.addItem(i, name, title, context);
+                } else {
+                    System.out.println("Eles NULL!!!!");
+                }
             }
         }
 
@@ -74,9 +80,9 @@ public class MainActivity extends AppCompatActivity {
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                if (id == 0){
+                if (id == 0) {
                     Toast.makeText(MainActivity.this, "관리자 공지입니다.", Toast.LENGTH_LONG).show();
-                }else {
+                } else {
                     /*
                     Intent intent = new Intent(getApplicationContext(), DetailRecord.class);
                     intent.putExtra("index", list.get(position).get("index"));
@@ -89,7 +95,7 @@ public class MainActivity extends AppCompatActivity {
                     ListViewItem item = (ListViewItem) parent.getItemAtPosition(position);
 
                     Intent intent = new Intent(getApplicationContext(), DetailRecord.class);
-                    intent.putExtra("index", item.getindex()+"");
+                    intent.putExtra("index", item.getindex() + "");
                     intent.putExtra("date", item.getTime());
                     intent.putExtra("context", item.getContext());
                     intent.putExtra("name", item.getName());
@@ -114,11 +120,11 @@ public class MainActivity extends AppCompatActivity {
         super.onActivityResult(requestCode, resultCode, data);
 
         //firebase에 Data 추가
-        if(requestCode == REQUEST_CODE_ADD){
+        if (requestCode == REQUEST_CODE_ADD) {
 //            Toast.makeText(getApplicationContext(),
 //                    "onActivityResult 메서드 요청됨, 요청코드 : " + requestCode +
 //                    " , 결과 코드 : " + resultCode, Toast.LENGTH_LONG).show();
-            if(resultCode == RESULT_OK){
+            if (resultCode == RESULT_OK) {
                 String recive_date = data.getStringExtra("date");
                 String recive_context = data.getStringExtra("context");
                 String recive_name = data.getStringExtra("name");
@@ -129,9 +135,9 @@ public class MainActivity extends AppCompatActivity {
                 //firebase에 Data 추가
                 mDatabase = FirebaseDatabase.getInstance().getReference().child("data");
                 Map<String, String> tmp = new HashMap<>();
-                tmp.put("title",recive_date);
-                tmp.put("context",recive_context);
-                tmp.put("name",recive_name);
+                tmp.put("title", recive_date);
+                tmp.put("context", recive_context);
+                tmp.put("name", recive_name);
                 fbdata.data.add(tmp);
                 mDatabase.setValue(fbdata.data);
                 mDatabase.push();
@@ -139,11 +145,11 @@ public class MainActivity extends AppCompatActivity {
         }
 
         //firebase에 Data 업데이트, 삭제
-        if(requestCode == REQUEST_CODE_DETAIL){
+        if (requestCode == REQUEST_CODE_DETAIL) {
 //            Toast.makeText(getApplicationContext(),
 //                    "onActivityResult 메서드 요청됨, 요청코드 : " + requestCode +
 //                            " , 결과 코드 : " + resultCode, Toast.LENGTH_LONG).show();
-            if (resultCode == RESULT_OK){
+            if (resultCode == RESULT_OK) {
                 String recive_index = data.getStringExtra("index");
                 String recive_date = data.getStringExtra("date");
                 String recive_context = data.getStringExtra("context");
@@ -151,24 +157,19 @@ public class MainActivity extends AppCompatActivity {
                 //Toast.makeText(MainActivity.this, "" + recive_index, Toast.LENGTH_LONG).show();
                 mDatabase = FirebaseDatabase.getInstance().getReference().child("data");
                 Map<String, String> tmp = new HashMap<>();
-                tmp.put("title",recive_date);
-                tmp.put("context",recive_context);
-                tmp.put("name",recive_name);
-                fbdata.data.set(Integer.parseInt(recive_index),tmp);
+                tmp.put("title", recive_date);
+                tmp.put("context", recive_context);
+                tmp.put("name", recive_name);
+                fbdata.data.set(Integer.parseInt(recive_index), tmp);
                 mDatabase.setValue(fbdata.data);
                 mDatabase.push();
-            }
-            else if (resultCode == RESULT_FIRST_USER){
+            } else if (resultCode == RESULT_FIRST_USER) {
                 String recive_index = data.getStringExtra("index");
-                if(fbdata.data.size()-1 == Integer.parseInt(recive_index)){
-                    mDatabase = FirebaseDatabase.getInstance().getReference().child("data").child(recive_index);
-                    mDatabase.removeValue();
-                } else {
-                    fbdata.data.remove(Integer.parseInt(recive_index));
-                    mDatabase = FirebaseDatabase.getInstance().getReference().child("data");
-                    mDatabase.setValue(fbdata.data);
-                    mDatabase.push();
-                }
+                fbdata.data.remove(Integer.parseInt(recive_index));
+                mDatabase = FirebaseDatabase.getInstance().getReference().child("data");
+                mDatabase.setValue(fbdata.data);
+                mDatabase.push();
+
             }
         }
     }
